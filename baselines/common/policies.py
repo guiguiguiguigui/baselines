@@ -6,6 +6,7 @@ from baselines.common.input import observation_placeholder, encode_observation
 from baselines.common.tf_util import adjust_shape
 from baselines.common.mpi_running_mean_std import RunningMeanStd
 from baselines.common.models import get_network_builder
+import csv
 
 import gym
 
@@ -39,7 +40,6 @@ class PolicyWithValue(object):
         self.__dict__.update(tensors)
 
         vf_latent = vf_latent if vf_latent is not None else latent
-
         vf_latent = tf.layers.flatten(vf_latent)
         latent = tf.layers.flatten(latent)
 
@@ -48,12 +48,19 @@ class PolicyWithValue(object):
 
         self.pd, self.pi = self.pdtype.pdfromlatent(latent, init_scale=0.01)
 
+
         # Take an action
         self.action = self.pd.sample()
+
 
         # Calculate the neg log of our probability
         self.neglogp = self.pd.neglogp(self.action)
         self.sess = sess or tf.get_default_session()
+
+        with open('var.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerow([1]*8)
+
 
         if estimate_q:
             assert isinstance(env.action_space, gym.spaces.Discrete)
@@ -89,8 +96,16 @@ class PolicyWithValue(object):
         -------
         (action, value estimate, next state, negative log likelihood of the action under current policy parameters) tuple
         """
+        #a, v, state, neglogp = self._evaluate([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
 
-        a, v, state, neglogp = self._evaluate([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
+        a, v, state, neglogp, mean, std, xx= self._evaluate([self.action, self.vf, self.state, self.neglogp, self.pd.mean, self.pd.std, self.X], observation, **extra_feed)
+        #print("\n\nmean: ", mean)
+        #print("std: ", std)
+
+        with open('var.csv', 'a') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerow(std[0].tolist())
+
         if state.size == 0:
             state = None
         return a, v, state, neglogp
@@ -119,6 +134,7 @@ class PolicyWithValue(object):
         tf_util.load_state(load_path, sess=self.sess)
 
 def build_policy(env, policy_network, value_network=None,  normalize_observations=False, estimate_q=False, **policy_kwargs):
+
     if isinstance(policy_network, str):
         network_type = policy_network
         policy_network = get_network_builder(network_type)(**policy_kwargs)
@@ -140,6 +156,7 @@ def build_policy(env, policy_network, value_network=None,  normalize_observation
 
         with tf.variable_scope('pi', reuse=tf.AUTO_REUSE):
             policy_latent = policy_network(encoded_x)
+
             if isinstance(policy_latent, tuple):
                 policy_latent, recurrent_tensors = policy_latent
 

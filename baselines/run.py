@@ -55,7 +55,6 @@ def train(args, extra_args):
 
     total_timesteps = int(args.num_timesteps)
     seed = args.seed
-
     learn = get_learn_function(args.alg)
     alg_kwargs = get_learn_function_defaults(args.alg, env_type)
     alg_kwargs.update(extra_args)
@@ -69,6 +68,7 @@ def train(args, extra_args):
     else:
         if alg_kwargs.get('network') is None:
             alg_kwargs['network'] = get_default_network(env_type)
+
 
     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
 
@@ -242,3 +242,4 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
+
