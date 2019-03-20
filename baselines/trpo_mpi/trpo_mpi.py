@@ -279,10 +279,17 @@ def learn(*,
     if sum([max_iters>0, total_timesteps>0, max_episodes>0])==0:
         # noththing to be done
         return pi
+<<<<<<< HEAD
 
     assert sum([max_iters>0, total_timesteps>0, max_episodes>0]) < 2, \
         'out of max_iters, total_timesteps, and max_episodes only one should be specified'
 
+=======
+
+    assert sum([max_iters>0, total_timesteps>0, max_episodes>0]) < 2, \
+        'out of max_iters, total_timesteps, and max_episodes only one should be specified'
+
+>>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
     while True:
         if callback: callback(locals(), globals())
         if total_timesteps and timesteps_so_far >= total_timesteps:

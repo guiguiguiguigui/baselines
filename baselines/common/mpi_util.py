@@ -123,7 +123,11 @@ def mpi_weighted_mean(comm, local_name2valcount):
                     val = float(val)
                 except ValueError:
                     if comm.rank == 0:
+<<<<<<< HEAD
                         warnings.warn('WARNING: tried to compute mean on non-float {}={}'.format(name, val))
+=======
+                        warnings.warn(f'WARNING: tried to compute mean on non-float {name}={val}')
+>>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
                 else:
                     name2sum[name] += val * count
                     name2count[name] += count

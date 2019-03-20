@@ -17,7 +17,11 @@ def test_mpi_weighted_mean():
         d = mpi_util.mpi_weighted_mean(comm, name2valcount)
         correctval = {'a' : (10 * 2 + 19) / 3.0, 'b' : 20, 'c' : 42}
         if comm.rank == 0:
+<<<<<<< HEAD
             assert d == correctval, '{} != {}'.format(d, correctval)
+=======
+            assert d == correctval, f'{d} != {correctval}'
+>>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
 
         for name, (val, count) in name2valcount.items():
             for _ in range(count):
