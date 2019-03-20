@@ -329,6 +329,7 @@ def learn(*,
             surrbefore = lossbefore[0]
             stepsize = 1.0
             thbefore = get_flat()
+            thbefore = get_flat()
             for _ in range(10):
                 thnew = thbefore + fullstep * stepsize
                 set_from_flat(thnew)

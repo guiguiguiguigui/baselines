@@ -63,6 +63,7 @@ class CategoricalPdType(PdType):
         return CategoricalPd
     def pdfromlatent(self, latent_vector, init_scale=1.0, init_bias=0.0):
         pdparam = _matching_fc(latent_vector, 'pi', self.ncat, init_scale=init_scale, init_bias=init_bias)
+        pdparam = _matching_fc(latent_vector, 'pi', self.ncat, init_scale=init_scale, init_bias=init_bias)
         return self.pdfromflat(pdparam), pdparam
 
     def param_shape(self):
@@ -101,7 +102,7 @@ class DiagGaussianPdType(PdType):
 
     def pdfromlatent(self, latent_vector, init_scale=1.0, init_bias=0.0):
         mean = _matching_fc(latent_vector, 'pi', self.size, init_scale=init_scale, init_bias=init_bias)
-        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer())
+        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer()) #tf.math.log(tf.constant([1.0]*8))#
         pdparam = tf.concat([mean, mean * 0.0 + logstd], axis=1)
         return self.pdfromflat(pdparam), mean
 
@@ -229,8 +230,14 @@ class DiagGaussianPd(Pd):
         self.flat = flat
         mean, logstd = tf.split(axis=len(flat.shape)-1, num_or_size_splits=2, value=flat)
         self.mean = mean
+
+        #TODO: experiments
+        #self.std = tf.constant([1.0]*3)
+        #self.logstd = tf.math.log(self.std)
+
         self.logstd = logstd
         self.std = tf.exp(logstd)
+
     def flatparam(self):
         return self.flat
     def mode(self):

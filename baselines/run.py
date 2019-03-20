@@ -55,6 +55,7 @@ def train(args, extra_args):
 
     total_timesteps = int(args.num_timesteps)
     seed = args.seed
+    print("seed",seed)
     learn = get_learn_function(args.alg)
     alg_kwargs = get_learn_function_defaults(args.alg, env_type)
     alg_kwargs.update(extra_args)
@@ -106,6 +107,7 @@ def build_env(args):
                                intra_op_parallelism_threads=1,
                                inter_op_parallelism_threads=1)
         config.gpu_options.allow_growth = True
+        print(config)
         get_session(config=config)
 
         flatten_dict_observations = alg not in {'her'}
@@ -197,6 +199,8 @@ def main(args):
     args, unknown_args = arg_parser.parse_known_args(args)
     extra_args = parse_cmdline_kwargs(unknown_args)
 
+    print(args)
+    print(unknown_args)
     if args.extra_import is not None:
         import_module(args.extra_import)
 

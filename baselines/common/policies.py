@@ -56,6 +56,7 @@ class PolicyWithValue(object):
         # Calculate the neg log of our probability
         self.neglogp = self.pd.neglogp(self.action)
         self.sess = sess or tf.get_default_session()
+        self.variance_saved = False
 
         with open('var.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
@@ -99,12 +100,17 @@ class PolicyWithValue(object):
         #a, v, state, neglogp = self._evaluate([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
 
         a, v, state, neglogp, mean, std, xx= self._evaluate([self.action, self.vf, self.state, self.neglogp, self.pd.mean, self.pd.std, self.X], observation, **extra_feed)
-        #print("\n\nmean: ", mean)
-        #print("std: ", std)
 
-        with open('var.csv', 'a') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerow(std[0].tolist())
+
+        #print("\n\nmean: ", mean)
+        print("std: ", std)
+        '''
+        if not self.variance_saved:
+            with open('var.csv', 'a') as csvFile:
+                writer = csv.writer(csvFile)
+                writer.writerow(std.tolist())
+        self.variance_saved = True
+        '''
 
         if state.size == 0:
             state = None
