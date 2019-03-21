@@ -6,11 +6,8 @@ from collections import defaultdict
 import tensorflow as tf
 import numpy as np
 
-<<<<<<< HEAD
 from baselines.common.vec_env import VecFrameStack, VecNormalize, VecEnv
-=======
-from baselines.common.vec_env import VecFrameStack, VecNormalize
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
+
 from baselines.common.vec_env.vec_video_recorder import VecVideoRecorder
 from baselines.common.cmd_util import common_arg_parser, parse_unknown_args, make_vec_env, make_env
 from baselines.common.tf_util import get_session
@@ -59,11 +56,7 @@ def train(args, extra_args):
 
     total_timesteps = int(args.num_timesteps)
     seed = args.seed
-<<<<<<< HEAD
-    print("seed",seed)
-=======
 
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
     learn = get_learn_function(args.alg)
     alg_kwargs = get_learn_function_defaults(args.alg, env_type)
     alg_kwargs.update(extra_args)
@@ -78,10 +71,6 @@ def train(args, extra_args):
         if alg_kwargs.get('network') is None:
             alg_kwargs['network'] = get_default_network(env_type)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
 
     model = learn(
@@ -118,10 +107,7 @@ def build_env(args):
                                intra_op_parallelism_threads=1,
                                inter_op_parallelism_threads=1)
         config.gpu_options.allow_growth = True
-<<<<<<< HEAD
-        print(config)
-=======
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
+
         get_session(config=config)
 
         flatten_dict_observations = alg not in {'her'}
@@ -213,11 +199,6 @@ def main(args):
     args, unknown_args = arg_parser.parse_known_args(args)
     extra_args = parse_cmdline_kwargs(unknown_args)
 
-<<<<<<< HEAD
-    print(args)
-    print(unknown_args)
-=======
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
     if args.extra_import is not None:
         import_module(args.extra_import)
 
@@ -249,19 +230,12 @@ def main(args):
                 actions, _, _, _ = model.step(obs)
 
             obs, rew, done, _ = env.step(actions)
-<<<<<<< HEAD
-            episode_rew += rew[0] if isinstance(env, VecEnv) else rew
-            env.render()
-            done = done.any() if isinstance(done, np.ndarray) else done
-            if done:
-                print('episode_rew={}'.format(episode_rew))
-=======
+
             episode_rew += rew[0]
             env.render()
             done = done.any() if isinstance(done, np.ndarray) else done
             if done:
                 print(f'episode_rew={episode_rew}')
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
                 episode_rew = 0
                 obs = env.reset()
 
@@ -271,7 +245,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
-<<<<<<< HEAD
-
-=======
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2

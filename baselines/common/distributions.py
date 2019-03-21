@@ -63,10 +63,7 @@ class CategoricalPdType(PdType):
         return CategoricalPd
     def pdfromlatent(self, latent_vector, init_scale=1.0, init_bias=0.0):
         pdparam = _matching_fc(latent_vector, 'pi', self.ncat, init_scale=init_scale, init_bias=init_bias)
-<<<<<<< HEAD
-        pdparam = _matching_fc(latent_vector, 'pi', self.ncat, init_scale=init_scale, init_bias=init_bias)
-=======
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
+
         return self.pdfromflat(pdparam), pdparam
 
     def param_shape(self):
@@ -105,11 +102,9 @@ class DiagGaussianPdType(PdType):
 
     def pdfromlatent(self, latent_vector, init_scale=1.0, init_bias=0.0):
         mean = _matching_fc(latent_vector, 'pi', self.size, init_scale=init_scale, init_bias=init_bias)
-<<<<<<< HEAD
+
         logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer()) #tf.math.log(tf.constant([1.0]*8))#
-=======
-        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer())
->>>>>>> 90d66776a49ad5e732b935dfc891bfbd06035ed2
+
         pdparam = tf.concat([mean, mean * 0.0 + logstd], axis=1)
         return self.pdfromflat(pdparam), mean
 
