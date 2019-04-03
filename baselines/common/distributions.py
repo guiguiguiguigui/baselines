@@ -100,10 +100,13 @@ class DiagGaussianPdType(PdType):
     def pdclass(self):
         return DiagGaussianPd
 
-    def pdfromlatent(self, latent_vector, init_scale=1.0, init_bias=0.0):
+    def pdfromlatent(self, latent_vector, std, init_scale=1.0, init_bias=0.0):
         mean = _matching_fc(latent_vector, 'pi', self.size, init_scale=init_scale, init_bias=init_bias)
 
-        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer()) #tf.math.log(tf.constant([1.0]*8))#
+        #TODO: logstd is set or got here.
+        #logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer())
+        logstd_val = np.log([std] * self.size)
+        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.constant_initializer(logstd_val))
 
         pdparam = tf.concat([mean, mean * 0.0 + logstd], axis=1)
         return self.pdfromflat(pdparam), mean
@@ -234,7 +237,7 @@ class DiagGaussianPd(Pd):
         self.mean = mean
 
         #TODO: experiments
-        #self.std = tf.constant([1.0]*3)
+        #self.std = tf.constant([1.0]* mean.get_shape().as_list()[1])
         #self.logstd = tf.math.log(self.std)
 
         self.logstd = logstd

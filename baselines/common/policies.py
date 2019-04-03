@@ -16,7 +16,7 @@ class PolicyWithValue(object):
     Encapsulates fields and methods for RL policy and value function estimation with shared parameters
     """
 
-    def __init__(self, env, observations, latent, estimate_q=False, vf_latent=None, sess=None, **tensors):
+    def __init__(self, env, observations, latent, std, estimate_q=False, vf_latent=None, sess=None, **tensors):
         """
         Parameters:
         ----------
@@ -47,7 +47,7 @@ class PolicyWithValue(object):
         # Based on the action space, will select what probability distribution type
         self.pdtype = make_pdtype(env.action_space)
 
-        self.pd, self.pi = self.pdtype.pdfromlatent(latent, init_scale=0.01)
+        self.pd, self.pi = self.pdtype.pdfromlatent(latent, std, init_scale=0.01)
 
 
         # Take an action
@@ -98,13 +98,12 @@ class PolicyWithValue(object):
 
 
         #print("\n\nmean: ", mean)
-        print("std: ", std)
+        #print("std: ", std)
         '''
         if not self.variance_saved:
             with open('var.csv', 'a') as csvFile:
                 writer = csv.writer(csvFile)
                 writer.writerow(std.tolist())
-        self.variance_saved = True
         '''
 
         if state.size == 0:
@@ -183,10 +182,13 @@ def build_policy(env, policy_network, value_network=None,  normalize_observation
                 # TODO recurrent architectures are not supported with value_network=copy yet
                 vf_latent = _v_net(encoded_x)
 
+        #TODO experiment param
+        std = policy_kwargs['std']
         policy = PolicyWithValue(
             env=env,
             observations=X,
             latent=policy_latent,
+            std=std,
             vf_latent=vf_latent,
             sess=sess,
             estimate_q=estimate_q,
