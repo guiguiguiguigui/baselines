@@ -292,6 +292,7 @@ def learn(*,
         elif max_iters and iters_so_far >= max_iters:
             break
         logger.log("********** Iteration %i ************"%iters_so_far)
+        pi.set_log_false() # experiments
 
         with timed("sampling"):
             seg = seg_gen.__next__()
@@ -328,7 +329,6 @@ def learn(*,
             expectedimprove = g.dot(fullstep)
             surrbefore = lossbefore[0]
             stepsize = 1.0
-            thbefore = get_flat()
             thbefore = get_flat()
             for _ in range(10):
                 thnew = thbefore + fullstep * stepsize

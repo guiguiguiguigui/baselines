@@ -56,7 +56,7 @@ class PolicyWithValue(object):
         # Calculate the neg log of our probability
         self.neglogp = self.pd.neglogp(self.action)
         self.sess = sess or tf.get_default_session()
-
+        self.std_logged = False
         if estimate_q:
             assert isinstance(env.action_space, gym.spaces.Discrete)
             self.q = fc(vf_latent, 'q', env.action_space.n)
@@ -76,6 +76,9 @@ class PolicyWithValue(object):
 
         return sess.run(variables, feed_dict)
 
+    def set_log_false(self):
+        self.std_logged = False
+
     def step(self, observation, **extra_feed):
         """
         Compute next action(s) given the observation(s)
@@ -94,18 +97,16 @@ class PolicyWithValue(object):
 
         #a, v, state, neglogp = self._evaluate([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
 
-        a, v, state, neglogp, mean, std, xx= self._evaluate([self.action, self.vf, self.state, self.neglogp, self.pd.mean, self.pd.std, self.X], observation, **extra_feed)
+        a, v, state, neglogp, mean, std= self._evaluate([self.action, self.vf, self.state, self.neglogp, self.pd.mean, self.pd.std], observation, **extra_feed)
 
+        if not self.std_logged:
+            with open('std.txt', 'a+') as f:
+                spamwriter = csv.writer(f)
+                spamwriter.writerow(std)
+            self.std_logged=True
 
         #print("\n\nmean: ", mean)
         #print("std: ", std)
-        '''
-        if not self.variance_saved:
-            with open('var.csv', 'a') as csvFile:
-                writer = csv.writer(csvFile)
-                writer.writerow(std.tolist())
-        '''
-
         if state.size == 0:
             state = None
         return a, v, state, neglogp
