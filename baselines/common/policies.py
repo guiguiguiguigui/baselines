@@ -47,7 +47,7 @@ class PolicyWithValue(object):
         # Based on the action space, will select what probability distribution type
         self.pdtype = make_pdtype(env.action_space)
 
-        self.pd, self.pi = self.pdtype.pdfromlatent(latent, std, init_scale=0.01)
+        self.pd, self.pi = self.pdtype.pdfromlatentX(latent, self.X, init_scale=0.01)
 
 
         # Take an action
@@ -105,8 +105,6 @@ class PolicyWithValue(object):
                 spamwriter.writerow(std)
             self.std_logged=True
 
-        #print("\n\nmean: ", mean)
-        #print("std: ", std)
         if state.size == 0:
             state = None
         return a, v, state, neglogp

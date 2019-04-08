@@ -102,12 +102,18 @@ class DiagGaussianPdType(PdType):
 
     def pdfromlatent(self, latent_vector, std, init_scale=1.0, init_bias=0.0):
         mean = _matching_fc(latent_vector, 'pi', self.size, init_scale=init_scale, init_bias=init_bias)
-
         #TODO: logstd is set or got here.
-        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.zeros_initializer())
+        logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.ones_initializer())
         #logstd_val = np.log([std] * self.size)
         #logstd = tf.get_variable(name='pi/logstd', shape=[1, self.size], initializer=tf.constant_initializer(logstd_val))
 
+        pdparam = tf.concat([mean, mean * 0.0 + logstd], axis=1)
+        return self.pdfromflat(pdparam), mean
+
+    def pdfromlatentX(self, latent_vector, X ,init_scale=1.0, init_bias=0.0, std_init_scale=0.01, std_init_bias = 0.0):
+        print("__________GOT HERE!")
+        mean = _matching_fc(latent_vector, 'pi', self.size, init_scale=init_scale, init_bias=init_bias)
+        logstd = _matching_fc(X,'pi/logstd', self.size, init_scale=std_init_scale, init_bias=std_init_bias  )
         pdparam = tf.concat([mean, mean * 0.0 + logstd], axis=1)
         return self.pdfromflat(pdparam), mean
 
