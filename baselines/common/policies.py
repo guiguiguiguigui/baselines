@@ -47,8 +47,10 @@ class PolicyWithValue(object):
         # Based on the action space, will select what probability distribution type
         self.pdtype = make_pdtype(env.action_space)
 
-        self.pd, self.pi = self.pdtype.pdfromlatentX(latent, self.X, init_scale=0.01)
-
+        if std == 0: # state-dependent variance
+            self.pd, self.pi = self.pdtype.pdfromlatentX(latent, self.X, init_scale=0.01)
+        else:
+            self.pd, self.pi = self.pdtype.pdfromlatent(latent, std, init_scale=0.01)
 
         # Take an action
         self.action = self.pd.sample()
